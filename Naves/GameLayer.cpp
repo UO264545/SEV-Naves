@@ -118,15 +118,48 @@ void GameLayer::update() {
 	}
 
 	// Colisiones
+	std::list<Enemy*> deleteEnemies;
+	std::list<Projectile*> deleteProjectiles;
+	
 	for (auto const& enemy : enemies) {
 		if (player->isOverlap(enemy)) {
 			init();
 			return; // Cortar el for
 		}
+		checkColisionEnemyShoot(enemy, deleteEnemies, deleteProjectiles);
 	}
 
+	for (auto const& delEnemy : deleteEnemies) {
+		enemies.remove(delEnemy);
+	}
+	deleteEnemies.clear();
+
+	for (auto const& delProjectile : deleteProjectiles) {
+		projectiles.remove(delProjectile);
+	}
+	deleteProjectiles.clear();
 
 	cout << "update GameLayer" << endl;
+}
+
+// Colisión Enemy - Shoot
+void GameLayer::checkColisionEnemyShoot(Enemy* enemy, std::list<Enemy*> &deleteEnemies, std::list<Projectile*> &deleteProjectiles) {
+	for (auto const& projectile : projectiles) {
+		if (enemy->isOverlap(projectile)) {
+			bool pInList = std::find(deleteProjectiles.begin(),
+				deleteProjectiles.end(),
+				projectile) != deleteProjectiles.end();
+			if (!pInList) {
+				deleteProjectiles.push_back(projectile);
+			}
+			bool eInList = std::find(deleteEnemies.begin(),
+				deleteEnemies.end(),
+				enemy) != deleteEnemies.end();
+			if (!eInList) {
+				deleteEnemies.push_back(enemy);
+			}
+		}
+	}
 }
 
 void GameLayer::draw() {
