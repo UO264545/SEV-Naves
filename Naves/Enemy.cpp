@@ -4,8 +4,6 @@ Enemy::Enemy(float x, float y, Game* game)
 	vx = 1;
 }
 void Enemy::update() {
+	vx = -1;
 	x = x + vx;
-	if (x - width / 2 <= 0 || x + width / 2 >= WIDTH) {
-		vx = vx * -1;
-	}
 }

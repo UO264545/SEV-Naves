@@ -24,6 +24,7 @@ public:
 	bool controlShoot = false;
 	int controlMoveX = 0;
 	int controlMoveY = 0;
+	int newEnemyTime = 0;
 
 	std::list<Enemy*> enemies;
 	std::list<Projectile*> projectiles;
