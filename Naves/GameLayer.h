@@ -21,6 +21,7 @@ public:
 	void checkColisionEnemyShoot(Enemy* enemy, std::list<Enemy*> &deleteEnemies, std::list<Projectile*> &deleteProjectiles);
 	void draw() override;
 	void keysToControls(SDL_Event event);
+	void drawShoots();
 
 	Player* player;
 	Background* background;

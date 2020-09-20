@@ -153,6 +153,9 @@ void GameLayer::update() {
 	list<Projectile*> deleteProjectiles;
 	
 	for (auto const& enemy : enemies) {
+		// Eliminar enemigos que salen por la izquierda
+		if (enemy->x < 0)
+			deleteEnemies.push_back(enemy);
 		if (player->isOverlap(enemy)) {
 			init();
 			return; // Cortar el for
@@ -172,17 +175,26 @@ void GameLayer::update() {
 
 	// Comprobamos colisión Player - Collectable
 	// o el tiempo del Collectable ha finalizado
-	if (collectable != nullptr && (player->isOverlap(collectable) || collectable->timeToDisappear <= 0)) {
-		delete collectable;
-		collectable = nullptr;
+	if (collectable != nullptr) {
+		if (collectable->timeToDisappear <= 0) {
+			delete collectable;
+			collectable = nullptr;
+		} else if (player->isOverlap(collectable)) {
+			player->availableShoots++;
+			delete collectable;
+			collectable = nullptr;
+		}
 	}
 
-	cout << "update GameLayer" << endl;
+	//cout << "update GameLayer" << endl;
 }
 
 // Colisión Enemy - Shoot
 void GameLayer::checkColisionEnemyShoot(Enemy* enemy, std::list<Enemy*> &deleteEnemies, std::list<Projectile*> &deleteProjectiles) {
 	for (auto const& projectile : projectiles) {
+		// Eliminar projectiles que salen por la derecha
+		if (projectile->x > WIDTH)
+			deleteProjectiles.push_back(projectile);
 		if (enemy->isOverlap(projectile)) {
 			bool pInList = std::find(deleteProjectiles.begin(),
 				deleteProjectiles.end(),
@@ -204,6 +216,7 @@ void GameLayer::draw() {
 	//primero el background y después el player, sino no se ve el player
 	background->draw();
 	player->draw();
+	
 	if (collectable != nullptr)
 		collectable->draw();
 
@@ -214,8 +227,33 @@ void GameLayer::draw() {
 	for (auto const& projectile : projectiles) {
 		projectile->draw();
 	}
-
+	drawShoots();
 	SDL_RenderPresent(game->renderer); // Renderiza
 }
 
+void GameLayer::drawShoots() {
+	TTF_Init();
+	TTF_Font* font = TTF_OpenFont("res/sans.ttf", 16);
 
+	SDL_Color color;
+	color.r = 255;
+	color.g = 255;
+	color.b = 255;
+	color.a = 255; //transparente
+
+	std::string content = "Disparos: " + std::to_string(player->availableShoots);
+	SDL_Surface* surface = TTF_RenderText_Blended(font, content.c_str(), color);
+	// c_str() transforma el string a cost *char;
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(game->renderer, surface);
+
+	SDL_Rect rect;
+	rect.x = 10;
+	rect.y = 10 - surface->h / 2;
+	rect.w = surface->w;
+	rect.h = surface->h;
+
+	SDL_FreeSurface(surface);
+	SDL_RenderCopy(game->renderer, texture, NULL, &rect);
+	SDL_DestroyTexture(texture);
+
+}
