@@ -142,6 +142,9 @@ void GameLayer::update() {
 	list<Projectile*> deleteProjectiles;
 	
 	for (auto const& enemy : enemies) {
+		// Eliminar enemigos que salen por la izquierda
+		if (enemy->x < 0)
+			deleteEnemies.push_back(enemy);
 		if (player->isOverlap(enemy)) {
 			init();
 			return; // Cortar el for
@@ -165,6 +168,9 @@ void GameLayer::update() {
 // Colisión Enemy - Shoot
 void GameLayer::checkColisionEnemyShoot(Enemy* enemy, std::list<Enemy*> &deleteEnemies, std::list<Projectile*> &deleteProjectiles) {
 	for (auto const& projectile : projectiles) {
+		// Eliminar proyectiles que salen por la derecha
+		if (projectile->x > WIDTH)
+			deleteProjectiles.push_back(projectile);
 		if (enemy->isOverlap(projectile)) {
 			bool pInList = std::find(deleteProjectiles.begin(),
 				deleteProjectiles.end(),
