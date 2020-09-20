@@ -202,11 +202,14 @@ void GameLayer::checkColisionEnemyShoot(Enemy* enemy, std::list<Enemy*> &deleteE
 			if (!pInList) {
 				deleteProjectiles.push_back(projectile);
 			}
-			bool eInList = std::find(deleteEnemies.begin(),
-				deleteEnemies.end(),
-				enemy) != deleteEnemies.end();
-			if (!eInList) {
-				deleteEnemies.push_back(enemy);
+			enemy->life--;
+			if (enemy->life == 0) {
+				bool eInList = std::find(deleteEnemies.begin(),
+					deleteEnemies.end(),
+					enemy) != deleteEnemies.end();
+				if (!eInList) {
+					deleteEnemies.push_back(enemy);
+				}
 			}
 		}
 	}
