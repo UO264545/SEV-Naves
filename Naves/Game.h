@@ -19,6 +19,9 @@ class Game
 public:
 	Game();
 	void loop();
+	void scale();
+	bool scaledToMax = false;
+	float scaleLower = 1;
 	SDL_Window* window; // ventana
 	SDL_Renderer* renderer; // renderizador
 	bool loopActive; // Juego activo

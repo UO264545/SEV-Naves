@@ -55,10 +55,20 @@ void GameLayer::processControls() {
 }
 
 void GameLayer::keysToControls(SDL_Event event) {
+	if (event.type == SDL_QUIT) {
+		game->loopActive = false;
+	}
+
 	if (event.type == SDL_KEYDOWN) {
 		int code = event.key.keysym.sym;
 		// Pulsada
 		switch (code) {
+		case SDLK_1:
+			game->scale();
+			break;
+		case SDLK_ESCAPE:
+			game->loopActive = false;
+			break;
 		case SDLK_d: // derecha
 			controlMoveX = 1;
 			break;
@@ -109,6 +119,16 @@ void GameLayer::keysToControls(SDL_Event event) {
 
 void GameLayer::update() {
 	using namespace std;
+
+	// Generar enemigos
+	newEnemyTime--;
+	if (newEnemyTime <= 0) {
+		int rX = (rand() % (600 - 500)) + 1 + 500;
+		int rY = (rand() % (300 - 60)) + 1 + 60;
+		enemies.push_back(new Enemy(rX, rY, game));
+		newEnemyTime = 110;
+	}
+
 	player->update();
 	for (auto const& enemy : enemies) {
 		enemy->update();
@@ -118,8 +138,8 @@ void GameLayer::update() {
 	}
 
 	// Colisiones
-	std::list<Enemy*> deleteEnemies;
-	std::list<Projectile*> deleteProjectiles;
+	list<Enemy*> deleteEnemies;
+	list<Projectile*> deleteProjectiles;
 	
 	for (auto const& enemy : enemies) {
 		if (player->isOverlap(enemy)) {
