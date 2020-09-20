@@ -129,7 +129,18 @@ void GameLayer::update() {
 		newEnemyTime = 110;
 	}
 
+	// Generar recolectable
+	newCollectableTime--;
+	if (newCollectableTime <= 0) {
+		int rX = (rand() % (WIDTH - 20)) + 1 + 10;
+		int rY = (rand() % (HEIGHT - 20)) + 1 + 10;
+		collectable = new Collectable(rX, rY, game);
+		newCollectableTime = NEW_COLLECTABLE_TIME;
+	}
+
 	player->update();
+	if(collectable != nullptr)
+		collectable->update();
 	for (auto const& enemy : enemies) {
 		enemy->update();
 	}
@@ -159,6 +170,13 @@ void GameLayer::update() {
 	}
 	deleteProjectiles.clear();
 
+	// Comprobamos colisión Player - Collectable
+	// o el tiempo del Collectable ha finalizado
+	if (collectable != nullptr && (player->isOverlap(collectable) || collectable->timeToDisappear <= 0)) {
+		delete collectable;
+		collectable = nullptr;
+	}
+
 	cout << "update GameLayer" << endl;
 }
 
@@ -186,6 +204,8 @@ void GameLayer::draw() {
 	//primero el background y después el player, sino no se ve el player
 	background->draw();
 	player->draw();
+	if (collectable != nullptr)
+		collectable->draw();
 
 	for (auto const& enemy : enemies) {
 		enemy->draw();

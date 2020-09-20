@@ -5,8 +5,11 @@
 #include "Background.h"
 #include "Enemy.h"
 #include "Projectile.h"
+#include "Collectable.h"
 
 #include <list>
+
+#define NEW_COLLECTABLE_TIME 120 
 
 class GameLayer : public Layer
 {
@@ -25,8 +28,10 @@ public:
 	int controlMoveX = 0;
 	int controlMoveY = 0;
 	int newEnemyTime = 0;
+	int newCollectableTime = NEW_COLLECTABLE_TIME;
 
 	std::list<Enemy*> enemies;
 	std::list<Projectile*> projectiles;
+	Collectable* collectable; // Un único recolectable
 };
 
