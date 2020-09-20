@@ -8,8 +8,13 @@ void Player::update() {
 	if (shootTime > 0) {
 		shootTime--;
 	}
-	x = x + vx;
-	y = y + vy;
+	
+	int newX = x + vx;
+	int newY = y + vy;
+	if ((newX - this->width / 2) >= 0 && (newX + this->width / 2) <= WIDTH)
+		x = newX;
+	if ((newY - this->height / 2) >= 0 && (newY + this->height / 2) <= HEIGHT)
+		y = newY;
 }
 
 void Player::moveX(float axis) {
