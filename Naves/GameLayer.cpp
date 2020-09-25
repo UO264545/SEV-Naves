@@ -7,9 +7,14 @@ GameLayer::GameLayer(Game* game)
 }
 
 void GameLayer::init() {
+	points = 0;
+	textPoints = new Text("hola", WIDTH * 0.92, HEIGHT * 0.04, game);
+	textPoints->content = std::to_string(points);
+
 	delete player; //borra el jugador anterior
 	player = new Player(50, 50, game);
 	background = new Background("res/fondo.png", WIDTH * 0.5, HEIGHT * 0.5, game);
+	backgroundPoints = new Actor("res/icono_puntos.png", WIDTH * 0.85, HEIGHT * 0.05, 24, 24, game);
 
 	projectiles.clear(); // Vaciar por si reiniciamos el juego
 
@@ -184,6 +189,8 @@ void GameLayer::checkColisionEnemyShoot(Enemy* enemy, std::list<Enemy*> &deleteE
 			if (!eInList) {
 				deleteEnemies.push_back(enemy);
 			}
+			points++;
+			textPoints->content = std::to_string(points);
 		}
 	}
 }
@@ -200,6 +207,9 @@ void GameLayer::draw() {
 	for (auto const& projectile : projectiles) {
 		projectile->draw();
 	}
+
+	textPoints->draw();
+	backgroundPoints->draw(); //asi no lo tapa un enemigo
 
 	SDL_RenderPresent(game->renderer); // Renderiza
 }

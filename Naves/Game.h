@@ -20,6 +20,7 @@ public:
 	Game();
 	void loop();
 	void scale();
+	TTF_Font* font;
 	bool scaledToMax = false;
 	float scaleLower = 1;
 	SDL_Window* window; // ventana

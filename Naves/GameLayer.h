@@ -5,6 +5,7 @@
 #include "Background.h"
 #include "Enemy.h"
 #include "Projectile.h"
+#include "Text.h"
 
 #include <list>
 
@@ -21,6 +22,11 @@ public:
 
 	Player* player;
 	Background* background;
+	Actor* backgroundPoints;
+	
+	Text* textPoints;
+	int points;
+
 	bool controlShoot = false;
 	int controlMoveX = 0;
 	int controlMoveY = 0;

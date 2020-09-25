@@ -18,6 +18,10 @@ Game::Game() {
 
 	gameLayer = new GameLayer(this);
 
+	// fuentes
+	TTF_Init();
+	font = TTF_OpenFont("res/sans.ttf", 24);
+
 	loopActive = true; // bucle activo
 	loop();
 }
@@ -66,4 +70,5 @@ void Game::scale() {
 		// Cambiar escala del render
 		SDL_RenderSetScale(renderer, 1, 1);
 	}
+	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 }
