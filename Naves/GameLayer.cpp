@@ -13,7 +13,7 @@ void GameLayer::init() {
 
 	delete player; //borra el jugador anterior
 	player = new Player(50, 50, game);
-	background = new Background("res/fondo.png", WIDTH * 0.5, HEIGHT * 0.5, game);
+	background = new Background("res/fondo.png", WIDTH * 0.5, HEIGHT * 0.5, -1, game);
 	backgroundPoints = new Actor("res/icono_puntos.png", WIDTH * 0.85, HEIGHT * 0.05, 24, 24, game);
 
 	projectiles.clear(); // Vaciar por si reiniciamos el juego
@@ -125,6 +125,7 @@ void GameLayer::keysToControls(SDL_Event event) {
 void GameLayer::update() {
 	using namespace std;
 
+	background->update();
 	// Generar enemigos
 	newEnemyTime--;
 	if (newEnemyTime <= 0) {
@@ -164,6 +165,7 @@ void GameLayer::update() {
 
 	for (auto const& delProjectile : deleteProjectiles) {
 		projectiles.remove(delProjectile);
+		delete delProjectile;
 	}
 	deleteProjectiles.clear();
 
@@ -174,8 +176,14 @@ void GameLayer::update() {
 void GameLayer::checkColisionEnemyShoot(Enemy* enemy, std::list<Enemy*> &deleteEnemies, std::list<Projectile*> &deleteProjectiles) {
 	for (auto const& projectile : projectiles) {
 		// Eliminar proyectiles que salen por la derecha
-		if (projectile->x > WIDTH)
-			deleteProjectiles.push_back(projectile);
+		if (!projectile->isInRender()) {
+			bool pInList = std::find(deleteProjectiles.begin(),
+				deleteProjectiles.end(),
+				projectile) != deleteProjectiles.end();
+			if (!pInList) {
+				deleteProjectiles.push_back(projectile);
+			}
+		}
 		if (enemy->isOverlap(projectile)) {
 			bool pInList = std::find(deleteProjectiles.begin(),
 				deleteProjectiles.end(),
