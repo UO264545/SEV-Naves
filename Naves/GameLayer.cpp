@@ -205,7 +205,7 @@ void GameLayer::update() {
 			collectable = nullptr;
 		}
 		else if (player->isOverlap(collectable)) {
-			player->disparos++;
+			player->disparos += 10;
 			delete collectable;
 			textDisparos->content = std::to_string(player->disparos);
 			collectable = nullptr;
@@ -251,6 +251,9 @@ void GameLayer::checkColisionEnemyShoot(Enemy* enemy, std::list<Enemy*> &deleteE
 			if (!eInList) {
 				deleteEnemies.push_back(enemy);
 			}
+			player->disparos++;
+			textDisparos->content = std::to_string(player->disparos);
+
 			points++;
 			textPoints->content = std::to_string(points);
 		}

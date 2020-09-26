@@ -13,7 +13,7 @@
 
 #include <list>
 
-#define NEW_COLLECTABLE_TIME 120 
+#define NEW_COLLECTABLE_TIME 320 
 
 class GameLayer : public Layer
 {
