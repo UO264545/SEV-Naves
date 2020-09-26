@@ -6,6 +6,7 @@
 #include "Enemy.h"
 #include "Projectile.h"
 #include "Text.h"
+#include "Audio.h"
 
 #include <list>
 
@@ -24,6 +25,8 @@ public:
 	Background* background;
 	Actor* backgroundPoints;
 	
+	Audio* audioBackground;
+
 	Text* textPoints;
 	int points;
 
