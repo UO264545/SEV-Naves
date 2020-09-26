@@ -1,8 +1,7 @@
 #include "Actor.h"
 Actor::Actor(std::string filename, float x, float y, int width, int height, Game* game) {
 	this->game = game;
-	SDL_Surface* surface = IMG_Load(filename.c_str());
-	texture = SDL_CreateTextureFromSurface(game->renderer, surface);
+	texture = game->getTexture(filename);
 	this->x = x;
 	this->y = y;
 	// lo que mide el fichero
@@ -12,6 +11,7 @@ Actor::Actor(std::string filename, float x, float y, int width, int height, Game
 	this->width = width;
 	this->height = height;
 }
+
 void Actor::draw() {
 	// Recorte en el fichero de la imagen
 	SDL_Rect source;
@@ -50,5 +50,4 @@ bool Actor::isInRender() {
 }
 
 Actor::~Actor() {
-	SDL_DestroyTexture(texture);
 }

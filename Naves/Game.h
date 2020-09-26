@@ -5,6 +5,8 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <map>
+
 #include "Layer.h"
 
 // Valores generales
@@ -20,6 +22,8 @@ public:
 	Game();
 	void loop();
 	void scale();
+	SDL_Texture* getTexture(std::string filename);
+	std::map<std::string, SDL_Texture*> mapTextures; // map - cache
 	TTF_Font* font;
 	bool scaledToMax = false;
 	float scaleLower = 1;

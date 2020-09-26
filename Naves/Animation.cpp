@@ -5,8 +5,7 @@ Animation::Animation(std::string filename, float actorWidth, float actorHeight,
 	int updateFrecuence, int totalFrames, Game* game) {
 
 	// Cargar textura
-	SDL_Surface* surface = IMG_Load(filename.c_str());
-	texture = SDL_CreateTextureFromSurface(game->renderer, surface);
+	texture = game->getTexture(filename);
 
 	this->actorWidth = actorWidth;
 	this->actorHeight = actorHeight;
