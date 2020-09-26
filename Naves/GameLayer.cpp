@@ -16,8 +16,11 @@ void GameLayer::init() {
 
 	delete player; //borra el jugador anterior
 	player = new Player(50, 50, game);
+	textVidas = new Text(std::to_string(player->vidas), WIDTH * 0.18, HEIGHT * 0.10, game);
+
 	background = new Background("res/fondo.png", WIDTH * 0.5, HEIGHT * 0.5, -1, game);
 	backgroundPoints = new Actor("res/icono_puntos.png", WIDTH * 0.85, HEIGHT * 0.05, 24, 24, game);
+	backgroundVidas = new Actor("res/corazon.png", WIDTH * 0.10, HEIGHT * 0.10, 44, 36, game);
 
 	projectiles.clear(); // Vaciar por si reiniciamos el juego
 
@@ -161,8 +164,18 @@ void GameLayer::update() {
 		if (enemy->x < 0)
 			deleteEnemies.push_back(enemy);
 		if (player->isOverlap(enemy)) {
-			init();
-			return; // Cortar el for
+			// Comprobar que no se ha chocado ya con el enemigo
+			bool eInList = std::find(deleteEnemies.begin(),
+				deleteEnemies.end(),
+				enemy) != deleteEnemies.end();
+			if (!eInList) {
+				deleteEnemies.push_back(enemy);
+				if (--player->vidas == 0) {
+					init();
+					return; // Cortar el for
+				}
+				textVidas->content = std::to_string(player->vidas);
+			}
 		}
 		checkColisionEnemyShoot(enemy, deleteEnemies, deleteProjectiles);
 	}
@@ -227,6 +240,8 @@ void GameLayer::draw() {
 
 	textPoints->draw();
 	backgroundPoints->draw(); //asi no lo tapa un enemigo
+	backgroundVidas->draw();
+	textVidas->draw();
 
 	SDL_RenderPresent(game->renderer); // Renderiza
 }
