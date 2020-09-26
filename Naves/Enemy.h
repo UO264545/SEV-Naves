@@ -6,8 +6,8 @@
 class Enemy : public Actor
 {
 public:
-	Enemy(float x, float y, Game* game);
-	void update();
+	Enemy(std::string filename, float x, float y, float width, float height, Animation* aMoving, Game* game);
+	virtual void update();
 	void draw() override; // Sobreescribe
 
 	Animation* aMoving;
