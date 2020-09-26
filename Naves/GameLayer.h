@@ -26,11 +26,14 @@ public:
 	Player* player;
 	Background* background;
 	Actor* backgroundPoints;
+	Actor* backgroundVidas;
 	
 	Audio* audioBackground;
 
 	Text* textPoints;
 	int points;
+
+	Text* textVidas;
 
 	bool controlShoot = false;
 	int controlMoveX = 0;
