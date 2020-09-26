@@ -9,8 +9,11 @@
 #include "Projectile.h"
 #include "Text.h"
 #include "Audio.h"
+#include "Collectable.h"
 
 #include <list>
+
+#define NEW_COLLECTABLE_TIME 320 
 
 class GameLayer : public Layer
 {
@@ -27,13 +30,19 @@ public:
 	Background* background;
 	Actor* backgroundPoints;
 	Actor* backgroundVidas;
-	
+	Actor* backgroundDisparos;
+	Collectable* collectable;
+
+	int newCollectableTime = NEW_COLLECTABLE_TIME;
+
 	Audio* audioBackground;
 
 	Text* textPoints;
 	int points;
 
 	Text* textVidas;
+
+	Text* textDisparos;
 
 	bool controlShoot = false;
 	int controlMoveX = 0;

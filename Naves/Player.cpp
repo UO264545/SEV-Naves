@@ -22,7 +22,8 @@ void Player::moveY(float axis) {
 }
 
 Projectile* Player::shoot() {
-	if (shootTime == 0) {
+	if (shootTime == 0 && disparos > 0) {
+		--disparos;
 		audioShoot->play();
 		shootTime = shootCadence;
 		return new Projectile(x, y, game);
