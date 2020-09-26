@@ -7,6 +7,9 @@ GameLayer::GameLayer(Game* game)
 }
 
 void GameLayer::init() {
+	audioBackground = new Audio("res/musica_ambiente.mp3", true);
+	audioBackground->play();
+
 	points = 0;
 	textPoints = new Text("hola", WIDTH * 0.92, HEIGHT * 0.04, game);
 	textPoints->content = std::to_string(points);
@@ -169,7 +172,7 @@ void GameLayer::update() {
 	}
 	deleteProjectiles.clear();
 
-	cout << "update GameLayer" << endl;
+	// cout << "update GameLayer" << endl;
 }
 
 // Colisión Enemy - Shoot
