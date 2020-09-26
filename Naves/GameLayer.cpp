@@ -136,7 +136,6 @@ void GameLayer::update() {
 		int rY = (rand() % (300 - 60)) + 1 + 60;
 		Enemy* enemy = nullptr;
 		int enemyType = rand() % 100;
-		cout << enemyType;
 		if(enemyType < 60)
 			enemy = new NormalEnemy(rX, rY, game);
 		else
