@@ -67,6 +67,40 @@ void GameLayer::processControls() {
 	else {
 		player->moveY(0);
 	}
+
+	if (isSecondPlayer)
+		processControlsPlayer2();
+}
+
+void GameLayer::processControlsPlayer2() {
+	// Disparar
+	if (controlShoot2) {
+		Projectile* newProjectile = player2->shoot();
+		if (newProjectile != NULL) {
+			player->disparos++;
+			projectiles.push_back(newProjectile);
+		}
+	}
+	// Eje X
+	if (controlMoveX2 > 0) {
+		player2->moveX(1);
+	}
+	else if (controlMoveX2 < 0) {
+		player2->moveX(-1);
+	}
+	else {
+		player2->moveX(0);
+	}
+	// Eje Y
+	if (controlMoveY2 > 0) {
+		player2->moveY(1);
+	}
+	else if (controlMoveY2 < 0) {
+		player2->moveY(-1);
+	}
+	else {
+		player2->moveY(0);
+	}
 }
 
 void GameLayer::keysToControls(SDL_Event event) {
@@ -106,6 +140,12 @@ void GameLayer::keysToControls(SDL_Event event) {
 		case SDLK_SPACE: // dispara
 			controlShoot = true;
 			break;
+		case SDLK_RETURN:
+			if (!isSecondPlayer) {
+				isSecondPlayer = true;
+				player2 = new Player(50, 50, "res/jugador3.png", 30, 3, 3, game);
+			}
+			break;
 		}
 	}
 	if (event.type == SDL_KEYUP) {
@@ -134,6 +174,62 @@ void GameLayer::keysToControls(SDL_Event event) {
 			break;
 		case SDLK_SPACE: // dispara
 			controlShoot = false;
+			break;
+		}
+	}
+
+	if (isSecondPlayer)
+		controlSecondPlayer(event);
+}
+
+void GameLayer::controlSecondPlayer(SDL_Event event) {
+	if (event.type == SDL_KEYDOWN) {
+		int code = event.key.keysym.sym;
+		// Pulsada
+		switch (code) {
+		case SDLK_RIGHT: // derecha
+			controlMoveX2 = 1;
+			break;
+		case SDLK_LEFT: // izquierda
+			controlMoveX2 = -1;
+			break;
+		case SDLK_UP: // arriba
+			controlMoveY2 = -1;
+			break;
+		case SDLK_DOWN: // abajo
+			controlMoveY2 = 1;
+			break;
+		case SDLK_RETURN: // dispara
+			controlShoot2 = true;
+			break;
+		}
+	}
+	if (event.type == SDL_KEYUP) {
+		int code = event.key.keysym.sym;
+		// Levantada
+		switch (code) {
+		case SDLK_RIGHT: // derecha
+			if (controlMoveX2 == 1) {
+				controlMoveX2 = 0;
+			}
+			break;
+		case SDLK_LEFT: // izquierda
+			if (controlMoveX2 == -1) {
+				controlMoveX2 = 0;
+			}
+			break;
+		case SDLK_UP: // arriba
+			if (controlMoveY2 == -1) {
+				controlMoveY2 = 0;
+			}
+			break;
+		case SDLK_DOWN: // abajo
+			if (controlMoveY2 == 1) {
+				controlMoveY2 = 0;
+			}
+			break;
+		case SDLK_RETURN: // dispara
+			controlShoot2 = false;
 			break;
 		}
 	}
@@ -172,6 +268,9 @@ void GameLayer::update() {
 
 	player->update();
 
+	if (isSecondPlayer)
+		player2->update();
+
 	for (auto const& enemy : enemies) {
 		enemy->update();
 	}
@@ -187,7 +286,7 @@ void GameLayer::update() {
 		// Eliminar enemigos que salen por la izquierda
 		if (enemy->x < 0)
 			deleteEnemies.push_back(enemy);
-		if (player->isOverlap(enemy)) {
+		if (player->isOverlap(enemy) || (isSecondPlayer && player2->isOverlap(enemy))) {
 			// Comprobar que no se ha chocado ya con el enemigo
 			bool eInList = std::find(deleteEnemies.begin(),
 				deleteEnemies.end(),
@@ -211,7 +310,7 @@ void GameLayer::update() {
 			delete collectable;
 			collectable = nullptr;
 		}
-		else if (player->isOverlap(collectable)) {
+		else if (player->isOverlap(collectable) || (isSecondPlayer && player2->isOverlap(collectable))) {
 			player->disparos += 10;
 			delete collectable;
 			textDisparos->content = std::to_string(player->disparos);
@@ -271,6 +370,8 @@ void GameLayer::draw() {
 	//primero el background y después el player, sino no se ve el player
 	background->draw();
 	player->draw();
+	if (isSecondPlayer)
+		player2->draw();
 
 	if (collectable != nullptr)
 		collectable->draw();
@@ -299,21 +400,22 @@ void GameLayer::changePlayer(int playerNum) {
 	int x = player->x;
 	int y = player->y;
 	int shoots = player->disparos;
+	int vidas = player->vidas;
 	delete player;
 	switch (playerNum) {
 	case PLAYER_1:
 		player = new Player(x, y, game);
 		player->disparos = shoots;
+		player->vidas = vidas;
 		activePlayer = PLAYER_1;
 		break;
 	case PLAYER_2:
 		player = new Player(x, y, "res/jugador2.png", 20, 4, 4, game);
 		player->disparos = shoots;
+		player->vidas = vidas;
 		activePlayer = PLAYER_2;
 		break;
 	default:
 		break;
 	}
 }
-
-

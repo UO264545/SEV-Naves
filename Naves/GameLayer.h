@@ -28,8 +28,11 @@ public:
 	void draw() override;
 	void keysToControls(SDL_Event event);
 	void changePlayer(int player);
+	void controlSecondPlayer(SDL_Event event);
+	void processControlsPlayer2();
 
 	Player* player;
+	Player* player2;
 	Background* background;
 	Actor* backgroundPoints;
 	Actor* backgroundVidas;
@@ -47,14 +50,23 @@ public:
 
 	Text* textDisparos;
 
+	// Jugador 1
 	bool controlShoot = false;
 	int controlMoveX = 0;
 	int controlMoveY = 0;
+
+	// Jugador 2
+	bool controlShoot2 = false;
+	int controlMoveX2 = 0;
+	int controlMoveY2 = 0;
+
 	int newEnemyTime = 0;
 
 	std::list<Enemy*> enemies;
 	std::list<Projectile*> projectiles;
 
 	int activePlayer = PLAYER_1;
+
+	bool isSecondPlayer = false;
 };
 
