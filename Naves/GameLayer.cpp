@@ -71,6 +71,13 @@ void GameLayer::keysToControls(SDL_Event event) {
 		int code = event.key.keysym.sym;
 		// Pulsada
 		switch (code) {
+		// Cambio de nave
+		case SDLK_2:
+			changePlayer(PLAYER_1);
+			break;
+		case SDLK_3:
+			changePlayer(PLAYER_2);
+			break;
 		case SDLK_1:
 			game->scale();
 			break;
@@ -229,6 +236,26 @@ void GameLayer::draw() {
 	backgroundPoints->draw(); //asi no lo tapa un enemigo
 
 	SDL_RenderPresent(game->renderer); // Renderiza
+}
+
+void GameLayer::changePlayer(int playerNum) {
+	if (playerNum == activePlayer)
+		return;
+	int x = player->x;
+	int y = player->y;
+	delete player;
+	switch (playerNum) {
+	case PLAYER_1:
+		player = new Player(x, y, game);
+		activePlayer = PLAYER_1;
+		break;
+	case PLAYER_2:
+		player = new Player(x, y, "res/jugador2.png", 20, 4, 4, game);
+		activePlayer = PLAYER_2;
+		break;
+	default:
+		break;
+	}
 }
 
 

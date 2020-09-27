@@ -12,6 +12,9 @@
 
 #include <list>
 
+#define PLAYER_1 1
+#define PLAYER_2 2
+
 class GameLayer : public Layer
 {
 public:
@@ -22,6 +25,7 @@ public:
 	void checkColisionEnemyShoot(Enemy* enemy, std::list<Enemy*> &deleteEnemies, std::list<Projectile*> &deleteProjectiles);
 	void draw() override;
 	void keysToControls(SDL_Event event);
+	void changePlayer(int player);
 
 	Player* player;
 	Background* background;
@@ -39,5 +43,7 @@ public:
 
 	std::list<Enemy*> enemies;
 	std::list<Projectile*> projectiles;
+
+	int activePlayer = PLAYER_1;
 };
 
