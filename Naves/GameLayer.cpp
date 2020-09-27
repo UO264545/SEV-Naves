@@ -11,14 +11,20 @@ void GameLayer::init() {
 	audioBackground->play();
 
 	points = 0;
-	textPoints = new Text("hola", WIDTH * 0.92, HEIGHT * 0.04, game);
+	textPoints = new Text("hola", WIDTH * 0.92, HEIGHT * 0.09, game);
 	textPoints->content = std::to_string(points);
 
 	delete player; //borra el jugador anterior
 	player = new Player(50, 50, game);
-	background = new Background("res/fondo.png", WIDTH * 0.5, HEIGHT * 0.5, -1, game);
-	backgroundPoints = new Actor("res/icono_puntos.png", WIDTH * 0.85, HEIGHT * 0.05, 24, 24, game);
+	
+	textVidas = new Text(std::to_string(player->vidas), WIDTH * 0.18, HEIGHT * 0.10, game);
+	textDisparos = new Text(std::to_string(player->disparos), WIDTH * 0.18, HEIGHT * 0.9, game);
 
+	background = new Background("res/fondo.png", WIDTH * 0.5, HEIGHT * 0.5, -1, game);
+	backgroundPoints = new Actor("res/icono_puntos.png", WIDTH * 0.85, HEIGHT * 0.1, 24, 24, game);
+	backgroundVidas = new Actor("res/corazon.png", WIDTH * 0.10, HEIGHT * 0.10, 44, 36, game);
+	backgroundDisparos = new Actor("res/icono_disparos.png", WIDTH * 0.1, HEIGHT * 0.9, 40, 40, game);
+	
 	projectiles.clear(); // Vaciar por si reiniciamos el juego
 
 	enemies.clear(); // Vaciar por si reiniciamos el juego
@@ -37,6 +43,7 @@ void GameLayer::processControls() {
 	if (controlShoot) {
 		Projectile* newProjectile = player->shoot();
 		if (newProjectile != NULL) {
+			textDisparos->content = std::to_string(player->disparos);
 			projectiles.push_back(newProjectile);
 		}
 	}
@@ -151,7 +158,20 @@ void GameLayer::update() {
 		newEnemyTime = 110;
 	}
 
+	// Generar recolectable
+	newCollectableTime--;
+	if (newCollectableTime <= 0) {
+		int rX = (rand() % (WIDTH - 20)) + 1 + 10;
+		int rY = (rand() % (HEIGHT - 20)) + 1 + 10;
+		collectable = new Collectable(rX, rY, game);
+		newCollectableTime = NEW_COLLECTABLE_TIME;
+	}
+
+	if (collectable != nullptr)
+		collectable->update();
+
 	player->update();
+
 	for (auto const& enemy : enemies) {
 		enemy->update();
 	}
@@ -168,10 +188,35 @@ void GameLayer::update() {
 		if (enemy->x < 0)
 			deleteEnemies.push_back(enemy);
 		if (player->isOverlap(enemy)) {
-			init();
-			return; // Cortar el for
+			// Comprobar que no se ha chocado ya con el enemigo
+			bool eInList = std::find(deleteEnemies.begin(),
+				deleteEnemies.end(),
+				enemy) != deleteEnemies.end();
+			if (!eInList) {
+				deleteEnemies.push_back(enemy);
+				if (--player->vidas == 0) {
+					init();
+					return; // Cortar el for
+				}
+				textVidas->content = std::to_string(player->vidas);
+			}
 		}
 		checkColisionEnemyShoot(enemy, deleteEnemies, deleteProjectiles);
+	}
+
+	// Comprobamos colisión Player - Collectable
+	// o el tiempo del Collectable ha finalizado
+	if (collectable != nullptr) {
+		if (collectable->timeToDisappear <= 0) {
+			delete collectable;
+			collectable = nullptr;
+		}
+		else if (player->isOverlap(collectable)) {
+			player->disparos += 10;
+			delete collectable;
+			textDisparos->content = std::to_string(player->disparos);
+			collectable = nullptr;
+		}
 	}
 
 	for (auto const& delEnemy : deleteEnemies) {
@@ -213,6 +258,9 @@ void GameLayer::checkColisionEnemyShoot(Enemy* enemy, std::list<Enemy*> &deleteE
 			if (!eInList) {
 				deleteEnemies.push_back(enemy);
 			}
+			player->disparos++;
+			textDisparos->content = std::to_string(player->disparos);
+
 			points++;
 			textPoints->content = std::to_string(points);
 		}
@@ -224,6 +272,9 @@ void GameLayer::draw() {
 	background->draw();
 	player->draw();
 
+	if (collectable != nullptr)
+		collectable->draw();
+
 	for (auto const& enemy : enemies) {
 		enemy->draw();
 	}
@@ -234,6 +285,10 @@ void GameLayer::draw() {
 
 	textPoints->draw();
 	backgroundPoints->draw(); //asi no lo tapa un enemigo
+	backgroundVidas->draw();
+	textVidas->draw();
+	backgroundDisparos->draw();
+	textDisparos->draw();
 
 	SDL_RenderPresent(game->renderer); // Renderiza
 }
@@ -243,14 +298,17 @@ void GameLayer::changePlayer(int playerNum) {
 		return;
 	int x = player->x;
 	int y = player->y;
+	int shoots = player->disparos;
 	delete player;
 	switch (playerNum) {
 	case PLAYER_1:
 		player = new Player(x, y, game);
+		player->disparos = shoots;
 		activePlayer = PLAYER_1;
 		break;
 	case PLAYER_2:
 		player = new Player(x, y, "res/jugador2.png", 20, 4, 4, game);
+		player->disparos = shoots;
 		activePlayer = PLAYER_2;
 		break;
 	default:

@@ -18,5 +18,7 @@ public:
 	int rvy = 3;
 	int shootCadence = 30;
 	int shootTime = 0;
+	int vidas = 3;
+	int disparos = 10;
 };
 
